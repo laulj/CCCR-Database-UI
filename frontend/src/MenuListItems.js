@@ -28,6 +28,7 @@ export default function MenuListItems({ selectedMenuIndex, setSelectedMenuIndex 
                 </ListItemIcon>
                 <ListItemText primary="Database" />
             </ListItemButton>
+            {/* 
             <ListItemButton
                 selected={selectedMenuIndex === 2}
                 onClick={(e) => handleListItemClick(e, 2)}
@@ -36,10 +37,10 @@ export default function MenuListItems({ selectedMenuIndex, setSelectedMenuIndex 
                     <Terminal />
                 </ListItemIcon>
                 <ListItemText primary="Terminal" />
-            </ListItemButton>
+            </ListItemButton>*/}
             <ListItemButton
-                selected={selectedMenuIndex === 3}
-                onClick={(e) => handleListItemClick(e, 3)}
+                selected={selectedMenuIndex === 2}
+                onClick={(e) => handleListItemClick(e, 2)}
             >
                 <ListItemIcon>
                     <Settings />

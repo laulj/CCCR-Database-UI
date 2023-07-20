@@ -28,7 +28,7 @@ export default function Clock() {
 
 
     return (
-        <Box sx={{ height: 180 }}>
+        <Box >
             <Box sx={{
                 display: 'flex',
                 justifyContent: "right",
@@ -45,8 +45,9 @@ export default function Clock() {
                             justifyContent: "center",
                             alignItems: "center",
                             p: 1,
+                            pt: 2,
                             width: 175,
-                            height: 50,
+                            height: 40,
                         }}>
                             <Typography variant="overline" display="block" gutterBottom>
                                 {time}

@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import { CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, } from '@mui/material';
+import { CssBaseline, Drawer as MuiDrawer, Box, AppBar as MuiAppBar, Toolbar, List, Typography, Divider, IconButton, Container, Alert, Collapse } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import MenuListItems from './dashboard/ListItems';
-import Dashboard from './dashboard/Dashboard';
-import Database from './database/Database';
+import MenuListItems from './MenuListItems';
+import Dashboard from './Dashboard';
+import Database from './Database';
+import Settings from './settings/Settings';
 import Copyright from './Copyright';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -59,11 +60,52 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 
 export default function Layout({ theme }) {
-    const [open, setOpen] = React.useState(true);
+    // Menu Drawer Hooks
+    const [open, setOpen] = React.useState(false);
     const toggleDrawer = () => {
         setOpen(!open);
     };
-    const [selectedMenuIndex, setSelectedMenuIndex] = React.useState(0);
+    const [selectedMenuIndex, setSelectedMenuIndex] = React.useState(2);
+
+    // Menu: Database Hooks
+    const [error, setError] = React.useState(null);
+    //const [alertOpen, setAlertOpen] = React.useState(false);
+    const [dirHandle, setDirHandle] = React.useState(null);
+    const [imagePreview, setImagePreview] = React.useState(null);
+    const [rowFetchLoadingState, setRowFetchLoadingState] = React.useState(false);
+    const [rows, setRows] = React.useState([]);
+    const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
+
+    // Menu: Settings Hook
+    const [settings, setSettings] = React.useState({
+        configured: false,
+        processor: "gpu",
+        gpu_mem: 500,
+        cpu_threads: 10,
+        cam_pos: 0,
+        inputs: {
+            type: "img",
+            image_dir: "",
+            output_dir: "",
+            //save: false,
+            img_side_limit: 1280,
+            log_output: "",
+        },
+        requirements: {
+            isDocker: false,
+            isImage: false,
+            isNvidia: false,
+            isCUDA: false,
+            isCam: false,
+        },
+        message: {
+            isDocker: '',
+            isImage: '',
+            isNvidia: '',
+            isCUDA: '',
+            isCam: '',
+        },
+    });
 
     return (
         <>
@@ -94,10 +136,11 @@ export default function Layout({ theme }) {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Dashboard
+                            {selectedMenuIndex === 0 ? "Dashboard" : (selectedMenuIndex === 1 ? "Database" : "Settings")}
                         </Typography>
                     </Toolbar>
                 </AppBar>
+
                 <Drawer variant="permanent" open={open}>
                     <Toolbar
                         sx={{
@@ -130,10 +173,35 @@ export default function Layout({ theme }) {
                     <Toolbar />
 
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+
+                        <Collapse in={error !== null}>
+                            <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>{error}</Alert>
+                        </Collapse>
+
+
                         {selectedMenuIndex === 0 ?
-                            <Dashboard theme={theme} />
-                            :
-                            <Database />
+                            <Dashboard theme={theme} settings={settings} />
+                            : (selectedMenuIndex === 1 ?
+                                <Database
+                                    error={error} setError={setError}
+                                    dirHandle={dirHandle} setDirHandle={setDirHandle}
+                                    imagePreview={imagePreview} setImagePreview={setImagePreview}
+                                    rowFetchLoadingState={rowFetchLoadingState} setRowFetchLoadingState={setRowFetchLoadingState}
+                                    rows={rows} setRows={setRows}
+                                    rowSelectionModel={rowSelectionModel} setRowSelectionModel={setRowSelectionModel}
+                                />
+                                :
+                                <Settings
+                                    selectedMenuIndex={selectedMenuIndex}
+                                    error={error} setError={setError}
+                                    dirHandle={dirHandle} setDirHandle={setDirHandle}
+                                    imagePreview={imagePreview} setImagePreview={setImagePreview}
+                                    rowFetchLoadingState={rowFetchLoadingState} setRowFetchLoadingState={setRowFetchLoadingState}
+                                    rows={rows} setRows={setRows}
+                                    rowSelectionModel={rowSelectionModel} setRowSelectionModel={setRowSelectionModel}
+                                    settings={settings} setSettings={setSettings}
+                                />
+                            )
                         }
                         <Copyright sx={{ pt: 4 }} />
                     </Container>
