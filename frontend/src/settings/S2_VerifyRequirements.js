@@ -75,53 +75,8 @@ const VerifyRequirements = ({ settings, setSettings, imagePullProgress, setImage
         }),
     };
 
-    /*const handleisCUDASocketIO = () => {
-        let data = {};
-        let isFinished = false;
-
-        socketRef.current = socketIOClient('http://localhost:7000');
-
-        socketRef.current.on('cuda_checkOutput', async (response) => {
-            if ("data" in response) {
-                data = await JSON.parse(response.data);
-            }
-
-            // Check if the pull progress is finished
-            if ("status" in response) {
-                console.log("response.status:", response.status);
-                if (response.status === "Process completed") {
-                    isFinished = true;
-                }
-            }
-
-            console.log('isFinished:', isFinished);
-            // If the pull progress is not finished yet
-            if (!isFinished) {
-                //console.log("socket'progress':", data);
-                // Only when the previous state is referred in the setState function, will it be pointed to the correct value
-                setImagePullProgress((prevProgress) => { return parseProgress(prevProgress, data) });
-            } else {
-                // verify the if the docker image exists
-                handleButtonClick('isCUDA');
-            }
-
-        });
-
-        socketRef.current.on('connect_error', () => {
-            socketRef.current.close();
-            setImagePulling(false);
-        });
-
-        socketRef.current.on('disconnect', () => {
-            setImagePulling(false);
-        });
-
-        // Close the Pull Image Dialog
-        setOpenImagePullDialog(false);
-    }*/
-
     const handleButtonClick = async (criteria) => {
-        console.log('checking', !checking[criteria] === true)
+        //console.log('checking', !checking[criteria] === true)
         if (!checking[criteria]) {
             //setSuccess(false);
             //setLoading(true);
@@ -171,24 +126,10 @@ const VerifyRequirements = ({ settings, setSettings, imagePullProgress, setImage
 
                 }, 1000);
 
-                //console.log('before', 'settings:', settings, 'checking:', checking);
-                //console.log('before', 'success:', success, 'loading:', loading);
 
-                /*timer.current = window.setTimeout(() => {
-                    setSuccess(true);
-                    setLoading(false);
-                    console.log('true', settings)
-    
-                    setSettings({ ...settings, requirements: { ...settings.requirements, [criteria]: true }, });
-                    setChecking({ ...checking, [criteria]: false });
-                }, 2000);*/
             }
         }
-        //console.log('after', 'settings:', settings, 'checking:', checking);
-        //console.log('after', 'success:', success, 'loading:', loading);
-        /*return () => {
-            clearTimeout(timer.current); // Cleanup the timer on component unmount
-        };*/
+
     };
 
 
@@ -403,8 +344,6 @@ const Requirement = ({ name, criteria, settings, setSettings,
                             :
                             null
                     }
-
-
                 </Grid>
             </Card>
         </Grid>

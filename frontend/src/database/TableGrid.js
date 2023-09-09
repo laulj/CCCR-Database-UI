@@ -8,7 +8,7 @@ import {
     GridToolbarDensitySelector,
     GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
-import {CustomNoRowsOverlay} from './Utils'
+import { CustomNoRowsOverlay } from '../Utils'
 
 const columns = [
     {
@@ -29,6 +29,9 @@ const columns = [
         headerName: 'Prediction',
         description: 'This column is not sortable.',
         width: 160,
+        renderCell: (params) => (
+            params ? params.row.prediction : "N/A"
+        ),
         editable: false,
         sortable: false,
     },
@@ -37,7 +40,7 @@ const columns = [
         headerName: 'Confidence',
         width: 110,
         renderCell: (params) => (
-            params ? (parseFloat(params.row.confidence)/100).toFixed(2) : "N/A"
+            params ? (parseFloat(params.row.confidence) / 100).toFixed(2) : "N/A"
         ),
         editable: false,
     },
@@ -63,7 +66,7 @@ export default function DataGridDemo({ dirHandle, imagePreview, setImagePreview,
             <GridToolbarContainer sx={{ pl: 2, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box >
                     <GridToolbarDensitySelector sx={{ pr: 2, py: 2 }} />
-                    
+
                     <GridToolbarExport sx={{ pr: 2 }} />
 
                     { /* If one of the data is selected, display the Delete button */
@@ -74,7 +77,7 @@ export default function DataGridDemo({ dirHandle, imagePreview, setImagePreview,
                                         <DeleteOutlineTwoToneIcon color="info" fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
-                                
+
                                 {/* Modal dialog: "Are you sure to delete data ?" */}
                                 <Dialog
                                     open={openDialog}
@@ -134,7 +137,7 @@ export default function DataGridDemo({ dirHandle, imagePreview, setImagePreview,
             prevRows.map(async (row) => {
                 if (row.id === rowId) {
                     // Remove file from the directory
-                    await dirHandle.removeEntry(row.name);
+                    await dirHandle.removeEntry(row.outputName);
                 } else {
                     filteredRows.push(row)
                 }
@@ -143,7 +146,7 @@ export default function DataGridDemo({ dirHandle, imagePreview, setImagePreview,
             //filteredRows = filteredRows.filter(row => row.id !== rowId)
         })
         //console.log('filter:', filteredRows);
-        
+
         // Update the data
         setRows(filteredRows);
 

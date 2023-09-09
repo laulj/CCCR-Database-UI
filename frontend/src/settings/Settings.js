@@ -10,12 +10,15 @@ import Summary from './Summary';
 export default function Settings({
     selectedMenuIndex,
     error, setError,
+    ocrLogs, setOCRLogs,
     dirHandle, setDirHandle,
     imagePreview, setImagePreview,
     rowFetchLoadingState, setRowFetchLoadingState,
     rows, setRows,
     rowSelectionModel, setRowSelectionModel,
-    settings, setSettings
+    settings, setSettings, readConfigs,
+    imagePulling, setImagePulling,
+    imagePullProgress, setImagePullProgress,
 }) {
 
     React.useEffect(() => {
@@ -45,21 +48,20 @@ export default function Settings({
     const Div = styled('div')((theme) => ({ ...theme.typography, display: settings.configured ? "none" : "block" }))
     return (
         <>
-
-            {/*<Typography variant="h5" gutterBottom sx={{ mb: 5 }}>
-                Configurations
-            </Typography>*/}
             {!settings.configured ?
                 <Fade in={true}>
                     <Box sx={{ mx: 5, mt: 2 }}>
                         <HorizontalLinearStepper
                             error={error} setError={setError}
+                            ocrLogs={ocrLogs} setOCRLogs={setOCRLogs}
                             dirHandle={dirHandle} setDirHandle={setDirHandle}
                             imagePreview={imagePreview} setImagePreview={setImagePreview}
                             rowFetchLoadingState={rowFetchLoadingState} setRowFetchLoadingState={setRowFetchLoadingState}
                             rows={rows} setRows={setRows}
                             rowSelectionModel={rowSelectionModel} setRowSelectionModel={setRowSelectionModel}
-                            settings={settings} setSettings={setSettings}
+                            settings={settings} setSettings={setSettings} readConfigs={readConfigs}
+                            imagePulling={imagePulling} setImagePulling={setImagePulling}
+                            imagePullProgress={imagePullProgress} setImagePullProgress={setImagePullProgress}
                         />
                     </Box>
                 </Fade>
@@ -68,15 +70,7 @@ export default function Settings({
 
                 <Fade in={true}>
                     <Box sx={{ mx: 5, mt: 2 }}>
-                        <Summary
-                            error={error} setError={setError}
-                            dirHandle={dirHandle} setDirHandle={setDirHandle}
-                            imagePreview={imagePreview} setImagePreview={setImagePreview}
-                            rowFetchLoadingState={rowFetchLoadingState} setRowFetchLoadingState={setRowFetchLoadingState}
-                            rows={rows} setRows={setRows}
-                            rowSelectionModel={rowSelectionModel} setRowSelectionModel={setRowSelectionModel}
-                            settings={settings} setSettings={setSettings}
-                        />
+                        <Summary settings={settings} setSettings={setSettings} />
                     </Box>
                 </Fade>
             }

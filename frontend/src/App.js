@@ -7,9 +7,7 @@ import './App.css';*/
 import * as React from 'react';
 //import { red } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-//import Button from '@mui/material/Button';
 import Layout from './Layout';
-import Copyright from './Copyright';
 
 const theme = createTheme({
   palette: {
@@ -35,7 +33,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Layout theme={theme} />
-      {/*<Copyright sx={{ pt: 4 }} />*/}
     </ThemeProvider>
   );
 }

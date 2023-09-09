@@ -24,7 +24,7 @@ export default function ImagePullDialog({ settings, setSettings, checking, setCh
 
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                        Docker Image 'laulj/ccc_ocr-tensorflow-cuda11.2:1.3.0' is not found on your system, would you like to proceed to pull it from Docker Hub?
+                        Docker Image 'laulj/ccc_ocr-tensorflow-cuda11.2:1.3.0' is not found on your system, would you like to pull it from Docker Hub?
                     </DialogContentText>
                 </DialogContent>
 

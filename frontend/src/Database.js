@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Grid, Box, Paper, Button, IconButton, Typography, Tooltip, Fade } from '@mui/material';
 import { Image } from 'antd';
-import DataGridDemo from './TableGrid';
+import DataGridDemo from './database/TableGrid';
 import { InsertPhotoRounded, ClearSharp } from '@mui/icons-material';
 
 export default function Database({
@@ -10,26 +10,155 @@ export default function Database({
     imagePreview, setImagePreview,
     rowFetchLoadingState, setRowFetchLoadingState,
     rows, setRows,
-    rowSelectionModel, setRowSelectionModel
+    rowSelectionModel, setRowSelectionModel,
+    settings, setSettings,
 }) {
 
-    /*React.useEffect(() => {
-        //console.log("preview:", imagePreview);
-    }, [imagePreview])
-    React.useEffect(() => {
-        //console.log("dataset:", rows);
-    }, [rows])
-    React.useEffect(() => {
-        //console.log("rowSelectionModel:", rowSelectionModel);
-    }, [rowSelectionModel])*/
+    const openDirectory = async () => {
+        try {
+
+            const myDirHandle = await window.showDirectoryPicker();
+
+            setError({ ...error, msg: null });
+
+            if (await getReadWritePermission(myDirHandle)) {
+                clearCurrentDir();
+                setRowFetchLoadingState(true);
+                setDirHandle(myDirHandle);
+                console.log("dirhandle", myDirHandle);
+
+                await getDirFiles(myDirHandle);
+                setRowFetchLoadingState(false);
+            }
+        }
+        catch (err) {
+            setRowFetchLoadingState(false);
+            if (err.name !== "AbortError") {
+                setError({ type: "error", msg: "Your browser does not support Filesystem API to read directory, are you using Chrome-based browser?" });
+            }
+
+            console.log('Request aborted:', err);
+        }
+    }
+    const getReadWritePermission = async (handle) => {
+
+        const permission = await handle.requestPermission({ mode: 'readwrite' });
+        //console.log("permission:", permission)
+        if (permission !== 'granted') {
+            console.log("handle:", handle);
+            setError({ type: "error", msg: `Permission denied to read and write to ${handle.name}.` });
+            //throw new Error('No permission to open file');
+        } else {
+            setError({ ...error, msg: null })
+            return true;
+        }
+    }
+
+    const getDirFiles = async (dirHandle) => {
+        if (dirHandle.kind !== "directory") {
+            console.log("It is not a directory.")
+            return
+        }
+        let count = 1;
+        for await (const entry of dirHandle.values()) {
+            console.log("entry: ", entry);
+            if (entry.kind === "file") {
+                var temp = entry.name.split('.').pop();
+                var formats = ["jpg", "png", "gif"];
+                if (formats.includes(temp)) {
+                    const fileHandle = await dirHandle.getFileHandle(entry.name, {});
+                    const file = await fileHandle.getFile();
+                    const content = await getFileContents(file);
+                    console.log("file: ", file);
+                    // Retrieve and set image attributes
+                    await processFileContents(count, 100, file, content);
+                    count += 1;
+                }
+
+            } else if (entry.kind === "directory") {
+                await getDirFiles(entry);
+            }
+        }
+    }
+
+    async function processFileContents(id, max, img, content) {
+        let rawDatetime, prediction, confidence, inputFilename;
+        const fileExtension = img.name.split('.')[1];
+        let date;
+
+        try {
+            [rawDatetime, prediction, confidence, ...inputFilename] = img.name.split('.')[0].split('_');
+            let time = rawDatetime.split('T')[1].replaceAll('-', ':');
+            date = rawDatetime.split('T')[0] + 'T' + time;
+
+            // Get the input file name ( appended at the end of the output filename with '_')
+            inputFilename = inputFilename.join("_");
+        } catch (err) {
+            // If the image format is not [date]_[prediction]_[confidence]_[input file name].[file extension]
+            [rawDatetime, prediction, confidence, inputFilename] = [img.lastModified, null, null, ""]
+            rawDatetime = new Date(rawDatetime);
+            rawDatetime = rawDatetime.toISOString();
+            let time = rawDatetime.split('T')[1].replaceAll('-', ':');
+            date = rawDatetime.split('T')[0] + 'T' + time;
+        }
+        console.log('rawdatetime:', rawDatetime)
 
 
+        setRows(rows => [
+            ...rows,
+            {
+                id: id,
+                inputName: inputFilename.length !== 0 ? (inputFilename + '.' + fileExtension) : null,
+                outputName: img.name,
+                date: date,
+                lastModifiedDate: img.lastModifiedDate,
+                size: img.size,
+                type: img.type,
+                src: content,
+                prediction: prediction,
+                confidence: confidence,
+            }
+        ])
+    }
+
+    const getFileContents = async (file) => {
+        switch (file.type) {
+            case 'image/png':
+            case 'image/jpg':
+            case 'image/jpeg':
+            case 'image/gif':
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+
+                    reader.addEventListener('loadend', () => resolve(reader.result));
+                    reader.readAsDataURL(file);
+                });
+
+            default:
+                return file.text();
+        }
+    }
+
+    const clearCurrentDir = () => {
+        // Clear current directories and its related files
+        setDirHandle(null);
+        setImagePreview(null);
+        setRowFetchLoadingState(false);
+        setRows([]);
+        setRowSelectionModel([]);
+    }
 
     return (
         <>
             <Fade in={true}>
                 <Grid container spacing={3}>
                     {/* Image Preview */}
+                    <Grid item xs={12}>
+                        <Button variant='contained' onClick={openDirectory}>Open Dir.</Button>
+                        <Typography variant="caption" display="block" gutterBottom sx={{ mt: 1, fontSize: 14 }}>
+                            Open and grant the website the permissions to read and write to your output directory and to view the inferenced images respectively.
+                        </Typography>
+                    </Grid>
                     <Grid item xs={12}>
                         <Paper
                             id="imagePreview"

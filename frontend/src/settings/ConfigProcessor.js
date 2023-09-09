@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Box, Paper, Button, IconButton, Typography, Divider, TextField, InputBase, InputLabel, Select, FormControl, FormHelperText, MenuItem, Tooltip, Collapse, Fade } from '@mui/material';
+import { Grid, Box, TextField, InputLabel, Select, FormControl, FormHelperText, MenuItem, Collapse, } from '@mui/material';
 
 const ConfigProcessor = ({ settings, setSettings }) => {
 
@@ -22,7 +22,6 @@ const ConfigProcessor = ({ settings, setSettings }) => {
                             id="processor"
                             value={settings.processor}
                             onChange={(e) => setSettings({ ...settings, processor: e.target.value })}
-                            //autoWidth
                             label="processor"
                             size="small"
                         >
@@ -35,7 +34,7 @@ const ConfigProcessor = ({ settings, setSettings }) => {
                 <Grid item xs={6}>
                     <Collapse in={settings.processor === "gpu"}>
                         <Grid item xs={12}>
-                            <TextField id="gpu_mem" label="GPU mem. limit" type="number" value={settings.gpu_mem} onChange={(e) => setSettings({ ...settings, gpu_mem: e.target.value })} size="small" />
+                            <TextField id="gpu_mem" label="GPU mem. limit (MB)" type="number" value={settings.gpu_mem} onChange={(e) => setSettings({ ...settings, gpu_mem: e.target.value })} size="small" />
                             <FormHelperText>GPU memory allowance</FormHelperText>
                         </Grid>
                     </Collapse>
